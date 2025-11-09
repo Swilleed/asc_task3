@@ -4,12 +4,14 @@
 #include "stm32f10x.h"
 #include "OLED.h"
 #include "Key.h"
+#include "Motor.h"
 
 Menu CurrentMenu;
 uint8_t CurrentMenuIndex;
 
-void CreateMenu(Menu *menu, char *title, Menu *parent, void (*func)(void))
+Menu CreateMenu(char *title, Menu *parent, void (*func)(void))
 {
+    Menu *menu = (Menu *)malloc(sizeof(Menu));
     menu->title = title;
     menu->child = NULL;
     menu->childCount = 0;
@@ -19,6 +21,35 @@ void CreateMenu(Menu *menu, char *title, Menu *parent, void (*func)(void))
         parent->childCount++;
         parent->child = (Menu **)realloc(parent->child, parent->childCount * sizeof(Menu *));
         parent->child[parent->childCount - 1] = menu;
+    }
+
+    return *menu;
+}
+
+static void MenuSpeedSet(void)
+{
+    if (Key_Check(KEY_0, KEY_SINGLE)) {
+        if (TargetSpeed <= 80) {
+            TargetSpeed += 20;
+            if (TargetSpeed > 80) {
+                TargetSpeed = 0;
+            }
+        }
+    }
+    else if (Key_Check(KEY_1, KEY_SINGLE)) {
+        if (TargetSpeed >= 0) {
+            TargetSpeed -= 20;
+            if (TargetSpeed < 0) {
+                TargetSpeed = 0;
+            }
+        }
+    }
+}
+
+static void MenuLaunch(void)
+{
+    if (Key_Check(KEY_0, KEY_LONG)) {
+        TargetSpeed = 80;
     }
 }
 
@@ -49,7 +80,7 @@ static void MenuFunction(void)
 
 static void HandleInput(void)
 {
-    if (Key_Check(KEY_UP, KEY_SINGLE) && CurrentMenu.childCount > 0) {
+    if (Key_Check(KEY_0, KEY_SINGLE) && CurrentMenu.childCount > 0) {
         if (CurrentMenuIndex > 0) {
             CurrentMenuIndex--;
         }
@@ -58,7 +89,7 @@ static void HandleInput(void)
         }
     }
 
-    else if (Key_Check(KEY_DOWN, KEY_SINGLE) && CurrentMenu.childCount > 0) {
+    else if (Key_Check(KEY_1, KEY_SINGLE) && CurrentMenu.childCount > 0) {
         if (CurrentMenuIndex < CurrentMenu.childCount - 1) {
             CurrentMenuIndex++;
         }
@@ -67,16 +98,12 @@ static void HandleInput(void)
         }
     }
 
-    else if (Key_Check(KEY_ENTRY, KEY_SINGLE) && CurrentMenu.childCount > 0) {
+    else if (Key_Check(KEY_2, KEY_SINGLE) && CurrentMenu.childCount > 0) {
         NavigateToChild();
     }
 
-    else if (Key_Check(KEY_BACK, KEY_SINGLE) && CurrentMenu.parent != NULL) {
+    else if (Key_Check(KEY_3, KEY_SINGLE) && CurrentMenu.parent != NULL) {
         NavigateToParent();
-    }
-
-    else if (Key_Check(KEY_ENTRY, KEY_LONG)) {
-        MenuFunction();
     }
 }
 
@@ -95,4 +122,5 @@ void DisplayMenu(void)
     }
 
     HandleInput();
+    MenuFunction();
 }

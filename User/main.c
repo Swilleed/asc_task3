@@ -7,6 +7,7 @@
 #include "Timer.h"
 #include "pid.h"
 #include "Serial.h"
+#include "Menu.h"
 
 volatile uint8_t statu = 0; // 当前任务状态，0-速度控制，1-位置控制
 

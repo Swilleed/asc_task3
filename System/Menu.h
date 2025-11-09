@@ -16,4 +16,7 @@ typedef struct menu {
     } value;
 } Menu;
 
+Menu CreateMenu(char *title, Menu *parent, void (*func)(void));
+void DisplayMenu(void);
+
 #endif // MENU_H
