@@ -19,10 +19,13 @@ void PID_Init(PID_TypeDef *pid)
     pid->Kd = kd;
 }
 
-// PID计算函数
-// 参数: target: 目标值
-// 参数: actual: 实际值
-// 输出: output
+/**
+ * PID计算函数
+ * @param pid PID结构体指针
+ * @param target 目标值
+ * @param actual 实际值
+ * @return PID输出值
+ */
 float PID_Calculate(PID_TypeDef *pid, float target, float actual)
 {
     pid->TargetValue = target;

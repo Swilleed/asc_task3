@@ -16,5 +16,9 @@ void Motor_Init(void);
 void Motor_SetPWM(int32_t pwm);
 void Motor_UpdateSpeed(void);
 void Motor_Follow_Position(void);
+void Motor1_ReadCurrentSpeed(int32_t speed);
+void Motor2_ReadCurrentSpeed(int32_t speed);
+int32_t Motor1_GetCurrentSpeed(void);
+int32_t Motor2_GetCurrentSpeed(void);
 
 #endif

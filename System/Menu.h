@@ -9,14 +9,17 @@ typedef struct menu {
     int childCount;
     void (*func)(void);
     struct menu *parent;
-    union {
-        int intValue;
-        float floatValue;
-        char *stringValue;
-    } value;
+
+    int *intValue;
+    float *floatValue;
+    char **stringValue;
+
 } Menu;
 
-Menu CreateMenu(char *title, Menu *parent, void (*func)(void));
+Menu *InitMenu(void);
 void DisplayMenu(void);
+
+extern Menu *CurrentMenu;
+extern uint8_t CurrentMenuIndex;
 
 #endif // MENU_H

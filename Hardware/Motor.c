@@ -82,3 +82,22 @@ void Motor_Follow_Position(void)
 
     Motor_SetPWM((int32_t)output);
 }
+
+int32_t Motor1_GetCurrentSpeed(void)
+{
+    return CurrentSpeed1;
+}
+int32_t Motor2_GetCurrentSpeed(void)
+{
+    return CurrentSpeed2;
+}
+
+void Motor1_ReadCurrentSpeed(int32_t speed)
+{
+    CurrentSpeed1 = speed;
+}
+
+void Motor2_ReadCurrentSpeed(int32_t speed)
+{
+    CurrentSpeed2 = speed;
+}
