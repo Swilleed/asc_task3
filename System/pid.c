@@ -35,10 +35,10 @@ float PID_Calculate(PID_TypeDef *pid, float target, float actual)
     pid->Err = pid->TargetValue - pid->ActualValue;
 
     // 积分项计算
+    // 累加
     pid->Integral += pid->Err;
 
     // 微分项计算
-    // 累加
     float derivative = pid->Err - pid->Err_Last;
 
     // PID输出计算

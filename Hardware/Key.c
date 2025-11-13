@@ -1,6 +1,7 @@
 /*非阻塞式按键扫描*/
 #include "stm32f10x.h" // Device header
 #include "Key.h"
+#include "OLED.h"
 
 #define KEY_PRESSED 1
 #define KEY_UNPRESSED 0
@@ -123,5 +124,15 @@ void Key_Tick(void)
                 }
             }
         }
+    }
+}
+
+void Key_Test(void)
+{
+    if (Key_Check(KEY_1, KEY_SINGLE)) {
+        OLED_ShowString(0, 0, "Key 1 Single");
+    }
+    if (Key_Check(KEY_1, KEY_LONG)) {
+        OLED_ShowString(0, 0, "Key 1 Long  ");
     }
 }
