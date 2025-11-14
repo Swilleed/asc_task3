@@ -690,6 +690,16 @@
               <FileType>5</FileType>
               <FilePath>.\System\Menu.h</FilePath>
             </File>
+            <File>
+              <FileName>Tracking.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\System\Tracking.c</FilePath>
+            </File>
+            <File>
+              <FileName>Tracking.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\System\Tracking.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
