@@ -7,12 +7,12 @@ void Tracking_Control(void)
 {
     // 这里可以添加循迹控制逻辑
     // 例如根据传感器输入调整电机速度和方向
-    switch (GetInfraredSenseFlag();) {
-    case:
+    // switch (GetInfraredSenseFlag();) {
+    // case:
 
-        break;
+    //     break;
 
-    default:
-        break;
-    }
+    // default:
+    //     break;
+    // }
 }

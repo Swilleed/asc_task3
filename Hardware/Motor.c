@@ -26,7 +26,7 @@ void Motor_Init(void)
 }
 
 // 对电机1设定驱动力
-void Motor_SetPWM(int32_t pwm)
+void Motor1_SetPWM(int32_t pwm)
 {
     int32_t magnitude = pwm;
 
@@ -47,12 +47,40 @@ void Motor_SetPWM(int32_t pwm)
     PWM_SetCompare3((uint16_t)magnitude);
 }
 
-// 更新电机速度控制
-void Motor_UpdateSpeed(void)
+void Motor2_SetPWM(int32_t pwm)
 {
-    float output = PID_Calculate(&Motor1_PID, (float)TargetSpeed, (float)CurrentSpeed1);
+    int32_t magnitude = pwm;
+
+    if (magnitude >= 0) {
+        GPIO_ResetBits(GPIOB, GPIO_Pin_14);
+        GPIO_SetBits(GPIOB, GPIO_Pin_15);
+    }
+    else {
+        GPIO_SetBits(GPIOB, GPIO_Pin_14);
+        GPIO_ResetBits(GPIOB, GPIO_Pin_15);
+        magnitude = -magnitude;
+    }
+
+    if (magnitude > MOTOR_PWM_MAX) {
+        magnitude = MOTOR_PWM_MAX;
+    }
+
+    PWM_SetCompare4((uint16_t)magnitude);
+}
+
+// 更新电机速度控制
+void Motor1_UpdateSpeed(void)
+{
+    float output = PID_Calculate(&Motor1_PID, (float)TargetSpeed1, (float)CurrentSpeed1);
     Motor1_PID.Output = output;
-    Motor_SetPWM((int32_t)Motor1_PID.Output);
+    Motor1_SetPWM((int32_t)Motor1_PID.Output);
+}
+
+void Motor2_UpdateSpeed(void)
+{
+    float output = PID_Calculate(&Motor2_PID, (float)TargetSpeed2, (float)CurrentSpeed2);
+    Motor2_PID.Output = output;
+    Motor2_SetPWM((int32_t)Motor2_PID.Output);
 }
 
 // 电机位置跟随控制
@@ -80,7 +108,7 @@ void Motor_Follow_Position(void)
         output = 0.0f;
     }
 
-    Motor_SetPWM((int32_t)output);
+    Motor1_SetPWM((int32_t)output);
 }
 
 int32_t Motor1_GetCurrentSpeed(void)

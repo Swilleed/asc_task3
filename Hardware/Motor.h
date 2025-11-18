@@ -4,7 +4,8 @@
 #include <stdint.h>
 #include "pid.h"
 
-extern volatile int32_t TargetSpeed;
+extern volatile int32_t TargetSpeed1;
+extern volatile int32_t TargetSpeed2;
 extern volatile int32_t CurrentSpeed1;
 extern volatile int32_t CurrentSpeed2;
 extern volatile int64_t EncoderCount1;
@@ -13,8 +14,10 @@ extern PID_TypeDef Motor1_PID;
 extern PID_TypeDef Motor2_PID;
 
 void Motor_Init(void);
-void Motor_SetPWM(int32_t pwm);
-void Motor_UpdateSpeed(void);
+void Motor1_SetPWM(int32_t pwm);
+void Motor2_SetPWM(int32_t pwm);
+void Motor1_UpdateSpeed(void);
+void Motor2_UpdateSpeed(void);
 void Motor_Follow_Position(void);
 void Motor1_ReadCurrentSpeed(int32_t speed);
 void Motor2_ReadCurrentSpeed(int32_t speed);

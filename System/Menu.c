@@ -38,18 +38,18 @@ static Menu *CreateMenu(char *title, Menu *parent, void (*func)(void))
 static void MenuSpeedSet(void)
 {
     if (Key_Check(KEY_0, KEY_SINGLE)) {
-        if (TargetSpeed <= 80) {
-            TargetSpeed += 20;
-            if (TargetSpeed > 80 || TargetSpeed < 0) {
-                TargetSpeed = 0;
+        if (TargetSpeed1 <= 80) {
+            TargetSpeed1 += 20;
+            if (TargetSpeed1 > 80 || TargetSpeed1 < 0) {
+                TargetSpeed1 = 0;
             }
         }
     }
     else if (Key_Check(KEY_1, KEY_SINGLE)) {
-        if (TargetSpeed >= 0) {
-            TargetSpeed -= 20;
-            if (TargetSpeed < 0 || TargetSpeed > 80) {
-                TargetSpeed = 0;
+        if (TargetSpeed1 >= 0) {
+            TargetSpeed1 -= 20;
+            if (TargetSpeed1 < 0 || TargetSpeed1 > 80) {
+                TargetSpeed1 = 0;
             }
         }
     }
@@ -59,7 +59,7 @@ static void MenuSpeedSet(void)
 static void MenuLaunch(void)
 {
     if (Key_Check(KEY_0, KEY_LONG)) {
-        TargetSpeed = 80;
+        TargetSpeed1 = 80;
     }
 }
 
