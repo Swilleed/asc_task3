@@ -44,9 +44,24 @@ static uint8_t InfraredSense_Read(void)
     return status;
 }
 
+void Digital_filter(void)
+{
+    uint8_t raw = InfraredSense_Read();
+    static uint8_t history[4] = {0};
+    static uint8_t index = 0;
+    history[index] = raw;
+    index = (index + 1) % 4;
+
+    uint8_t filtered = 0x0F; // Assume all sensors are off
+    for (uint8_t i = 0; i < 4; i++) {
+        filtered &= history[i];
+    }
+    InfraredSenseFlag = filtered;
+}
+
 void InfraredSensor_Tick(void)
 {
-    InfraredSenseFlag = InfraredSense_Read();
+    Digital_filter();
 }
 
 uint8_t GetInfraredSenseFlag(void)

@@ -68,6 +68,12 @@ void Motor2_SetPWM(int32_t pwm)
     PWM_SetCompare4((uint16_t)magnitude);
 }
 
+void Motor_SetSpeed(int32_t speed1, int32_t speed2)
+{
+    TargetSpeed1 = speed1;
+    TargetSpeed2 = speed2;
+}
+
 // 更新电机速度控制
 void Motor1_UpdateSpeed(void)
 {
