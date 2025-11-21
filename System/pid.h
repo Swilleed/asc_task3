@@ -15,7 +15,7 @@ typedef struct {
     float OutputMin;
 } PID_TypeDef;
 
-void PID_Init(PID_TypeDef *pid);
+void PID_Init(PID_TypeDef *pid, float kp, float ki, float kd);
 float PID_Calculate(PID_TypeDef *pid, float target, float actual);
 
 #endif

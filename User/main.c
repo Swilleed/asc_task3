@@ -8,8 +8,10 @@
 #include "pid.h"
 #include "Serial.h"
 #include "Menu.h"
+#include "Tracking.h"
+#include "InfraredSense.h"
 
-volatile uint8_t statu = 0; // 当前任务状态，0-速度控制，1-位置控制
+volatile uint8_t isRunning = 0; // 0-菜单模式, 1-循迹运行模式
 
 volatile int32_t TargetSpeed1 = 20;
 volatile int32_t TargetSpeed2 = 50;
@@ -32,16 +34,32 @@ int main(void)
     Encoder_Init();
     Timer_Init();
     Serial_Init();
+    Tracking_Init();
 
-    PID_Init(&Motor1_PID);
-    PID_Init(&Motor2_PID);
+    PID_Init(&Motor1_PID, kp, ki, kd);
+    PID_Init(&Motor2_PID, kp, ki, kd);
+
+    InitMenu();
 
     while (1) {
-        OLED_ShowSignedNum(1, 7, EncoderCount1, 6);
-        OLED_ShowSignedNum(2, 7, EncoderCount2, 6);
-        OLED_ShowSignedNum(1, 1, CurrentSpeed1, 4);
-        OLED_ShowSignedNum(2, 1, CurrentSpeed2, 4);
-        OLED_ShowSignedNum(3, 1, TargetSpeed1, 4);
+        if (isRunning == 0) {
+            DisplayMenu();
+        }
+        else {
+            OLED_ShowString(1, 1, "Running...     ");
+            OLED_ShowString(2, 1, "               ");
+            OLED_ShowString(3, 1, "               ");
+            OLED_ShowString(4, 1, "               ");
+
+            // 运行模式下，按任意键停止
+            if (Key_Check(KEY_0, KEY_SINGLE) || Key_Check(KEY_1, KEY_SINGLE)) {
+                isRunning = 0;
+                Motor_SetSpeed(0, 0);
+            }
+        }
+
+        OLED_ShowSignedNum(3, 1, CurrentSpeed1, 4);
+        OLED_ShowSignedNum(3, 8, CurrentSpeed2, 4);
 
         // 处理串口命令
         int16_t requestedSpeed;
@@ -53,36 +71,6 @@ int main(void)
         if (SpeedReportFlag) {
             SpeedReportFlag = 0;
             Serial_Printf("@CUR:%ld\r\n", (long)CurrentSpeed1);
-        }
-
-        if (statu == 0) {
-            OLED_ShowString(3, 10, "SpeedControl");
-            if (Key_Check(KEY_1, KEY_SINGLE)) {
-                // 状态切换到位置控制
-                Motor1_SetPWM(0);
-                Motor2_SetPWM(0);
-                kp = 0.4f;
-                ki = 0.02f;
-                kd = 0.1f;
-                PID_Init(&Motor2_PID);
-                EncoderCount1 = 0;
-                EncoderCount2 = 0;
-                statu = 1;
-            }
-        }
-        else if (statu == 1) {
-            OLED_ShowString(3, 10, "PositionControl");
-            if (Key_Check(KEY_1, KEY_SINGLE)) {
-                Motor1_SetPWM(0);
-                Motor2_SetPWM(0);
-                kp = 0.8f;
-                ki = 0.1f;
-                kd = 0.2f;
-                PID_Init(&Motor1_PID);
-                EncoderCount1 = 0;
-                EncoderCount2 = 0;
-                statu = 0;
-            }
         }
     }
 }
@@ -100,14 +88,18 @@ void TIM1_UP_IRQHandler(void)
         EncoderCount2 += Motor2_GetCurrentSpeed();
         TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
 
-        if (statu == 0) {
-            Motor1_UpdateSpeed();
+        if (isRunning) {
+            Tracking_Control();   // 计算目标速度
+            Motor1_UpdateSpeed(); // 执行速度闭环
             Motor2_UpdateSpeed();
         }
-        else if (statu == 1) {
-            // Motor_Follow_Position();
+        else {
+            Motor1_SetPWM(0);
+            Motor2_SetPWM(0);
         }
 
         SpeedReportFlag = 1;
     }
+
+    InfraredSensor_Tick();
 }

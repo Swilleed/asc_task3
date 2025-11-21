@@ -16,6 +16,7 @@ extern PID_TypeDef Motor2_PID;
 void Motor_Init(void);
 void Motor1_SetPWM(int32_t pwm);
 void Motor2_SetPWM(int32_t pwm);
+void Motor_SetSpeed(int32_t speed1, int32_t speed2);
 void Motor1_UpdateSpeed(void);
 void Motor2_UpdateSpeed(void);
 void Motor_Follow_Position(void);

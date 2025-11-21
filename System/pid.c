@@ -5,7 +5,7 @@ extern float kp;
 extern float ki;
 extern float kd;
 
-void PID_Init(PID_TypeDef *pid)
+void PID_Init(PID_TypeDef *pid, float kp, float ki, float kd)
 {
     pid->Err = 0.0f;
     pid->Err_Last = 0.0f;

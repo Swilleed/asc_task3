@@ -55,11 +55,13 @@ static void MenuSpeedSet(void)
     }
 }
 
+extern volatile uint8_t isRunning;
+
 // 启动命令菜单
 static void MenuLaunch(void)
 {
     if (Key_Check(KEY_0, KEY_LONG)) {
-        TargetSpeed1 = 80;
+        isRunning = 1;
     }
 }
 
