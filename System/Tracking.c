@@ -29,8 +29,14 @@ static void Motor_Control(uint8_t status)
     case DEVIATE_TO_LEFT:
         error = -1;
         break;
+    case 0x0E: // 补充左偏情况
+        error = -2;
+        break;
     case DEVIATE_TO_RIGHT:
         error = 1;
+        break;
+    case 0x07: // 补充右偏情况
+        error = 2;
         break;
     case ON_TRACK:
         error = STABLE_ERROR;

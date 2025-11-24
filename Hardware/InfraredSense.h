@@ -9,8 +9,8 @@
 #define DEVIATE_TO_LEFT 0x0C
 #define DEVIATE_TO_RIGHT 0x03
 #define ON_TRACK 0x06
-#define OFF_TRACK 0x00
-#define CROSSED_LINE 0x0F
+#define OFF_TRACK 0x0F
+#define CROSSED_LINE 0x00
 
 void InfraredSense_Init(void);
 void InfraredSensor_Tick(void);

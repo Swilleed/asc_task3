@@ -34,6 +34,7 @@ int main(void)
     Encoder_Init();
     Timer_Init();
     Serial_Init();
+    InfraredSense_Init();
     Tracking_Init();
 
     PID_Init(&Motor1_PID, kp, ki, kd);
