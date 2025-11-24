@@ -15,18 +15,27 @@ uint8_t Key_Flag[KEY_COUNT];
 void Key_Init(void)
 {
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
 
     GPIO_InitTypeDef GPIO_InitStructure;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_14;
+    GPIO_Init(GPIOC, &GPIO_InitStructure);
 }
 
 uint8_t Key_GetState(uint8_t n)
 {
-    if (n == KEY_1) {
+    if (n == KEY_0) {
         if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_0) == 0) {
+            return KEY_PRESSED;
+        }
+    }
+    if (n == KEY_1) {
+        if (GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_14) == 0) {
             return KEY_PRESSED;
         }
     }

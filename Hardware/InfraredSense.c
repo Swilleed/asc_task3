@@ -4,37 +4,41 @@ uint8_t InfraredSenseFlag = 0;
 
 void InfraredSense_Init(void)
 {
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
     GPIO_InitTypeDef GPIO_InitStructure;
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_3; // Assuming PA0 and PA1 are used for
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10 | GPIO_Pin_11 | GPIO_Pin_1 | GPIO_Pin_13;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD; // Input Pull-Down
-    GPIO_Init(GPIOA, &GPIO_InitStructure);
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
 }
 
 static uint8_t InfraredSense_Read(void)
 {
     uint8_t status = 0;
 
-    if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_3) == 1) {
+    // 左接b13
+    if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_13) == 1) {
         status |= INFRARED_LEFT;
     }
     else {
         status &= ~INFRARED_LEFT;
     }
-    if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_2) == 1) {
+    // 中左接b1
+    if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_1) == 1) {
         status |= INFRARED_MIDDLELEFT;
     }
     else {
         status &= ~INFRARED_MIDDLELEFT;
     }
-    if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_1) == 1) {
+    // 中右接b11
+    if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_11) == 1) {
         status |= INFRARED_MIDDLERIGHT;
     }
     else {
         status &= ~INFRARED_MIDDLERIGHT;
     }
-    if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_0) == 1) {
+    // 右接b10
+    if (GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_10) == 1) {
         status |= INFRARED_RIGHT;
     }
     else {
@@ -44,7 +48,7 @@ static uint8_t InfraredSense_Read(void)
     return status;
 }
 
-void Digital_filter(void)
+static uint8_t Digital_filter(void)
 {
     uint8_t raw = InfraredSense_Read();
     static uint8_t history[4] = {0};
@@ -52,16 +56,16 @@ void Digital_filter(void)
     history[index] = raw;
     index = (index + 1) % 4;
 
-    uint8_t filtered = 0x0F; // Assume all sensors are off
+    uint8_t filtered = 0x0F;
     for (uint8_t i = 0; i < 4; i++) {
         filtered &= history[i];
     }
-    InfraredSenseFlag = filtered;
+    return filtered;
 }
 
 void InfraredSensor_Tick(void)
 {
-    Digital_filter();
+    InfraredSenseFlag = Digital_filter();
 }
 
 uint8_t GetInfraredSenseFlag(void)

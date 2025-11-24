@@ -141,16 +141,16 @@ static void HandleInput(void)
         }
     }
 
-    else if (Key_Check(KEY_1, KEY_SINGLE) && CurrentMenu->childCount > 0) {
-        if (CurrentMenuIndex < CurrentMenu->childCount - 1) {
-            CurrentMenuIndex++;
-        }
-        else if (CurrentMenuIndex == CurrentMenu->childCount - 1) {
-            CurrentMenuIndex = 0;
-        }
-    }
+    // else if (Key_Check(KEY_1, KEY_SINGLE) && CurrentMenu->childCount > 0) {
+    //     if (CurrentMenuIndex < CurrentMenu->childCount - 1) {
+    //         CurrentMenuIndex++;
+    //     }
+    //     else if (CurrentMenuIndex == CurrentMenu->childCount - 1) {
+    //         CurrentMenuIndex = 0;
+    //     }
+    // }
 
-    else if (Key_Check(KEY_2, KEY_SINGLE) && CurrentMenu->childCount > 0) {
+    else if (Key_Check(KEY_1, KEY_SINGLE) && CurrentMenu->childCount > 0) {
         NavigateToChild();
     }
 
@@ -162,19 +162,20 @@ static void HandleInput(void)
 // 显示当前菜单
 void DisplayMenu(void)
 {
+    OLED_Clear(); // 清屏，防止残影
     OLED_ShowString(1, 1, CurrentMenu->title);
 
     // 显示子菜单项
     // 显示光标
     for (int i = 0; i < CurrentMenu->childCount; i++) {
         if (CurrentMenuIndex == i) {
-            OLED_ShowString(1, i + 2, ">");
+            OLED_ShowString(i + 2, 1, ">"); // 光标在第1列
         }
         else {
-            OLED_ShowString(1, i + 2, " ");
+            OLED_ShowString(i + 2, 1, " "); // 清除光标
         }
 
-        OLED_ShowString(2, i + 2, CurrentMenu->child[i]->title);
+        OLED_ShowString(i + 2, 2, CurrentMenu->child[i]->title); // 菜单项从第2列开始
     }
 
     HandleInput();  // 处理按键输入

@@ -12,10 +12,19 @@ void Tracking_Init(void)
 }
 
 // 通过pid控制电机左右速度比
+/**
+ * 电机控制函数
+ * @param status 红外传感器状态
+ */
 static void Motor_Control(uint8_t status)
 {
     const int8_t STABLE_ERROR = 0;
     int8_t error = 0;
+    if (status == OFF_TRACK) {
+        Motor_SetSpeed(-5, -5); // 后退
+        return;
+    }
+
     switch (status) {
     case DEVIATE_TO_LEFT:
         error = -1;
@@ -25,9 +34,6 @@ static void Motor_Control(uint8_t status)
         break;
     case ON_TRACK:
         error = STABLE_ERROR;
-        break;
-    case OFF_TRACK:
-        error = 0; // 保持原有速度
         break;
     case CROSSED_LINE:
         error = 0; // 保持原有速度

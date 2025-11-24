@@ -58,8 +58,8 @@ int main(void)
             }
         }
 
-        OLED_ShowSignedNum(3, 1, CurrentSpeed1, 4);
-        OLED_ShowSignedNum(3, 8, CurrentSpeed2, 4);
+        OLED_ShowSignedNum(4, 1, CurrentSpeed1, 4);
+        OLED_ShowSignedNum(4, 8, CurrentSpeed2, 4);
 
         // 处理串口命令
         int16_t requestedSpeed;

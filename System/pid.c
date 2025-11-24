@@ -5,6 +5,13 @@ extern float kp;
 extern float ki;
 extern float kd;
 
+/**
+ * PID初始化函数
+ * @param pid PID结构体指针
+ * @param kp 比例系数
+ * @param ki 积分系数
+ * @param kd 微分系数
+ */
 void PID_Init(PID_TypeDef *pid, float kp, float ki, float kd)
 {
     pid->Err = 0.0f;
@@ -14,7 +21,7 @@ void PID_Init(PID_TypeDef *pid, float kp, float ki, float kd)
     pid->Output = 0.0f;
     pid->OutputMax = 99.0f; // 与 PWM 占空比范围一致
     pid->OutputMin = -99.0f;
-    pid->Kp = kp; // 使用外部定义的全局变量
+    pid->Kp = kp;
     pid->Ki = ki;
     pid->Kd = kd;
 }

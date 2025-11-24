@@ -1,10 +1,10 @@
 #ifndef __KEY_H
 #define __KEY_H
 
-#define KEY_COUNT 1
+#define KEY_COUNT 2
 
 #define KEY_0 0
-#define KEY_1 0
+#define KEY_1 1
 #define KEY_2 2
 #define KEY_3 3
 
