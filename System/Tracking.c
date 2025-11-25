@@ -8,7 +8,7 @@ PID_TypeDef PID_Tracking;
 
 void Tracking_Init(void)
 {
-    PID_Init(&PID_Tracking, 15.0f, 0.0f, 5.0f);
+    PID_Init(&PID_Tracking, 10.0f, 0.0f, 5.0f);
 }
 
 // 通过pid控制电机左右速度比
@@ -32,11 +32,17 @@ void Tracking_Control(uint8_t status, int32_t baseSpeed)
     case 0x0E: // 补充左偏情况
         error = -2;
         break;
+    case 0x08: // 补充中左偏情况
+        error = -1;
+        break;
     case DEVIATE_TO_RIGHT:
         error = 1;
         break;
     case 0x07: // 补充右偏情况
         error = 2;
+        break;
+    case 0x02: // 补充中右偏情况
+        error = 1;
         break;
     case ON_TRACK:
         error = STABLE_ERROR;

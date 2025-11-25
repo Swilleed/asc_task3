@@ -84,8 +84,8 @@ void TIM1_UP_IRQHandler(void)
     if (TIM_GetITStatus(TIM1, TIM_IT_Update) == SET) {
         // Motor1_ReadCurrentSpeed(Encoder1_Get());
         // Motor2_ReadCurrentSpeed(Encoder2_Get());
-        CurrentSpeed1 = Encoder1_Get();
-        CurrentSpeed2 = Encoder2_Get();
+        CurrentSpeed1 = Encoder1_Get() * 2;
+        CurrentSpeed2 = Encoder2_Get() * 2;
         EncoderCount1 += Motor1_GetCurrentSpeed();
         EncoderCount2 += Motor2_GetCurrentSpeed();
         TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
