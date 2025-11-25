@@ -16,10 +16,17 @@ typedef struct menu {
 
 } Menu;
 
+typedef enum {
+    SLOW,
+    MEDIUM,
+    FAST
+} Speed_Option;
+
 Menu *InitMenu(void);
 void DisplayMenu(void);
 
 extern Menu *CurrentMenu;
 extern uint8_t CurrentMenuIndex;
+extern volatile int32_t BaseSpeed;
 
 #endif // MENU_H

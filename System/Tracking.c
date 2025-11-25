@@ -16,7 +16,7 @@ void Tracking_Init(void)
  * 电机控制函数
  * @param status 红外传感器状态
  */
-static void Motor_Control(uint8_t status)
+void Tracking_Control(uint8_t status, int32_t baseSpeed)
 {
     const int8_t STABLE_ERROR = 0;
     int8_t error = 0;
@@ -49,13 +49,12 @@ static void Motor_Control(uint8_t status)
     }
 
     float correction = PID_Calculate(&PID_Tracking, 0.0f, (float)error);
-    int32_t baseSpeed = 20;                           // 基础速度
     int32_t speed1 = baseSpeed + (int32_t)correction; // 左轮速度
     int32_t speed2 = baseSpeed - (int32_t)correction; // 右轮速度
     Motor_SetSpeed(speed1, speed2);
 }
 
-void Tracking_Control(void)
-{
-    Motor_Control(GetInfraredSenseFlag());
-}
+// void Tracking_Control(void)
+// {
+//     Motor_Control(GetInfraredSenseFlag());
+// }

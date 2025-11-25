@@ -14,7 +14,8 @@
 volatile uint8_t isRunning = 0; // 0-菜单模式, 1-循迹运行模式
 
 volatile int32_t TargetSpeed1 = 20;
-volatile int32_t TargetSpeed2 = 50;
+volatile int32_t TargetSpeed2 = 20;
+volatile int32_t BaseSpeed = 20;
 volatile int32_t CurrentSpeed1, CurrentSpeed2;
 volatile int64_t EncoderCount1 = 0;
 volatile int64_t EncoderCount2 = 0;
@@ -90,8 +91,8 @@ void TIM1_UP_IRQHandler(void)
         TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
 
         if (isRunning) {
-            Tracking_Control();   // 计算目标速度
-            Motor1_UpdateSpeed(); // 执行速度闭环
+            Tracking_Control(GetInfraredSenseFlag(), BaseSpeed); // 计算目标速度
+            Motor1_UpdateSpeed();                                // 执行速度闭环
             Motor2_UpdateSpeed();
         }
         else {
