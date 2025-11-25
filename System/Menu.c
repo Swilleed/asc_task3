@@ -9,6 +9,7 @@
 
 Menu *CurrentMenu;
 uint8_t CurrentMenuIndex;
+Speed_Option speedOption = SLOW;
 
 /**
  * 创建菜单项
@@ -38,23 +39,21 @@ static Menu *CreateMenu(char *title, Menu *parent, void (*func)(void))
 static void MenuSpeedSet(void)
 {
     if (Key_Check(KEY_0, KEY_SINGLE)) {
-        if (TargetSpeed1 <= 80) {
-            TargetSpeed1 += 20;
-            if (TargetSpeed1 > 80 || TargetSpeed1 < 0) {
-                TargetSpeed1 = 0;
-            }
+        if (speedOption == SLOW) {
+            speedOption = MEDIUM;
+            BaseSpeed = 40;
+        }
+        else if (speedOption == MEDIUM) {
+            speedOption = FAST;
+            BaseSpeed = 60;
+        }
+        else if (speedOption == FAST) {
+            speedOption = SLOW;
+            BaseSpeed = 20;
         }
     }
-    else if (Key_Check(KEY_1, KEY_SINGLE)) {
-        if (TargetSpeed1 >= 0) {
-            TargetSpeed1 -= 20;
-            if (TargetSpeed1 < 0 || TargetSpeed1 > 80) {
-                TargetSpeed1 = 0;
-            }
-        }
-    }
+    OLED_ShowNum(3, 1, (uint32_t)BaseSpeed, 3);
 }
-
 extern volatile uint8_t isRunning;
 
 // 启动命令菜单
@@ -132,7 +131,7 @@ static void MenuFunction(void)
 static void HandleInput(void)
 {
 
-    if (Key_Check(KEY_0, KEY_SINGLE) && CurrentMenu->childCount > 0) {
+    if (CurrentMenu->childCount > 0 && Key_Check(KEY_0, KEY_SINGLE)) {
         if (CurrentMenuIndex > 0) {
             CurrentMenuIndex--;
         }
@@ -141,7 +140,7 @@ static void HandleInput(void)
         }
     }
 
-    // else if (Key_Check(KEY_1, KEY_SINGLE) && CurrentMenu->childCount > 0) {
+    // else if (CurrentMenu->childCount > 0 && Key_Check(KEY_1, KEY_SINGLE)) {
     //     if (CurrentMenuIndex < CurrentMenu->childCount - 1) {
     //         CurrentMenuIndex++;
     //     }
@@ -150,11 +149,11 @@ static void HandleInput(void)
     //     }
     // }
 
-    else if (Key_Check(KEY_1, KEY_SINGLE) && CurrentMenu->childCount > 0) {
+    else if (CurrentMenu->childCount > 0 && Key_Check(KEY_1, KEY_SINGLE)) {
         NavigateToChild();
     }
 
-    else if (Key_Check(KEY_3, KEY_SINGLE) && CurrentMenu->parent != NULL) {
+    else if (CurrentMenu->parent != NULL && Key_Check(KEY_1, KEY_LONG)) {
         NavigateToParent();
     }
 }
