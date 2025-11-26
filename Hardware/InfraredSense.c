@@ -51,13 +51,13 @@ static uint8_t InfraredSense_Read(void)
 static uint8_t Digital_filter(void)
 {
     uint8_t raw = InfraredSense_Read();
-    static uint8_t history[4] = {0};
+    static uint8_t history[5] = {0};
     static uint8_t index = 0;
     history[index] = raw;
-    index = (index + 1) % 4;
+    index = (index + 1) % 5;
 
     uint8_t filtered = 0x0F;
-    for (uint8_t i = 0; i < 4; i++) {
+    for (uint8_t i = 0; i < 5; i++) {
         filtered &= history[i];
     }
     return filtered;

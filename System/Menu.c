@@ -49,7 +49,7 @@ static void MenuSpeedSet(void)
         }
         else if (speedOption == FAST) {
             speedOption = SLOW;
-            BaseSpeed = 20;
+            BaseSpeed = 30;
         }
     }
     OLED_ShowNum(3, 1, (uint32_t)BaseSpeed, 3);

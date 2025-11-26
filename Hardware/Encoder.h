@@ -4,5 +4,6 @@
 void Encoder_Init(void);
 int32_t Encoder1_Get(void);
 int32_t Encoder2_Get(void);
+void Encoder_Tick(void);
 
 #endif

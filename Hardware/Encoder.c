@@ -1,6 +1,7 @@
 /*编码器测速*/
 
 #include "stm32f10x.h" // Device header
+#include "Motor.h"
 
 void Encoder_Init(void)
 {
@@ -71,4 +72,12 @@ int32_t Encoder2_Get(void)
     Temp = TIM_GetCounter(TIM4);
     TIM_SetCounter(TIM4, 0);
     return Temp;
+}
+
+void Encoder_Tick(void)
+{
+    CurrentSpeed1 = Encoder1_Get();
+    CurrentSpeed2 = Encoder2_Get();
+    EncoderCount1 += Motor1_GetCurrentSpeed();
+    EncoderCount2 += Motor2_GetCurrentSpeed();
 }

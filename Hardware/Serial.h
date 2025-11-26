@@ -14,5 +14,6 @@ void Serial_SendString(char *String);
 void Serial_SendNumber(uint32_t Number, uint8_t Length);
 void Serial_Printf(char *format, ...);
 uint8_t Serial_TryParseTarget(int16_t *target);
+void Serial_SendJustFloat(const float *dataArray, uint8_t dataCount);
 
 #endif

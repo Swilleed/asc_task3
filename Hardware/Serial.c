@@ -8,6 +8,11 @@
 char Serial_RxPacket[100]; //"@MSG\r\n"
 uint8_t Serial_RxFlag;
 
+#define JUSTFLOAT_MAX_CHANNELS 8
+
+static uint8_t Serial_JustFloatBuffer[JUSTFLOAT_MAX_CHANNELS * 4 + 4];
+static void Serial_PackJustFloat(const float *dataArray, uint8_t dataCount, uint8_t *txBuffer);
+
 void Serial_Init(void)
 {
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
@@ -85,6 +90,30 @@ void Serial_SendNumber(uint32_t Number, uint8_t Length)
     for (i = 0; i < Length; i++) {
         Serial_SendByte(Number / Serial_Pow(10, Length - i - 1) % 10 + '0');
     }
+}
+
+static void Serial_PackJustFloat(const float *dataArray, uint8_t dataCount, uint8_t *txBuffer)
+{
+    uint8_t idx = 0;
+    for (uint8_t i = 0; i < dataCount; i++) {
+        memcpy(&txBuffer[idx], &dataArray[i], sizeof(float));
+        idx += sizeof(float);
+    }
+    txBuffer[idx++] = 0x00;
+    txBuffer[idx++] = 0x00;
+    txBuffer[idx++] = 0x80;
+    txBuffer[idx] = 0x7F;
+}
+
+void Serial_SendJustFloat(const float *dataArray, uint8_t dataCount)
+{
+    if (dataArray == NULL || dataCount == 0 || dataCount > JUSTFLOAT_MAX_CHANNELS) {
+        return;
+    }
+
+    uint16_t frameLength = (uint16_t)dataCount * sizeof(float) + 4;
+    Serial_PackJustFloat(dataArray, dataCount, Serial_JustFloatBuffer);
+    Serial_SendArray(Serial_JustFloatBuffer, frameLength);
 }
 
 int fputc(int ch, FILE *f)

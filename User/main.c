@@ -15,13 +15,13 @@ volatile uint8_t isRunning = 0; // 0-菜单模式, 1-循迹运行模式
 
 volatile int32_t TargetSpeed1 = 20;
 volatile int32_t TargetSpeed2 = 20;
-volatile int32_t BaseSpeed = 20;
+volatile int32_t BaseSpeed = 30;
 volatile int32_t CurrentSpeed1, CurrentSpeed2;
 volatile int64_t EncoderCount1 = 0;
 volatile int64_t EncoderCount2 = 0;
-volatile float kp = 0.8f;
-volatile float ki = 0.1f;
-volatile float kd = 0.2f;
+volatile float kp = 3.5f;
+volatile float ki = 0.25f;
+volatile float kd = 0.69f;
 
 PID_TypeDef Motor1_PID;
 PID_TypeDef Motor2_PID;
@@ -72,36 +72,39 @@ int main(void)
 
         if (SpeedReportFlag) {
             SpeedReportFlag = 0;
-            Serial_Printf("@CUR:%ld\r\n", (long)CurrentSpeed1);
+            float justFloatPayload[2];
+            justFloatPayload[0] = (float)CurrentSpeed1;
+            justFloatPayload[1] = (float)CurrentSpeed2;
+            Serial_SendJustFloat(justFloatPayload, 2);
         }
     }
 }
 
 void TIM1_UP_IRQHandler(void)
 {
-    Key_Tick();
-
     if (TIM_GetITStatus(TIM1, TIM_IT_Update) == SET) {
-        // Motor1_ReadCurrentSpeed(Encoder1_Get());
-        // Motor2_ReadCurrentSpeed(Encoder2_Get());
-        CurrentSpeed1 = Encoder1_Get() * 2;
-        CurrentSpeed2 = Encoder2_Get() * 2;
-        EncoderCount1 += Motor1_GetCurrentSpeed();
-        EncoderCount2 += Motor2_GetCurrentSpeed();
         TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
 
-        if (isRunning) {
-            Tracking_Control(GetInfraredSenseFlag(), BaseSpeed); // 计算目标速度
-            Motor1_UpdateSpeed();                                // 执行速度闭环
-            Motor2_UpdateSpeed();
-        }
-        else {
-            Motor1_SetPWM(0);
-            Motor2_SetPWM(0);
+        static uint8_t slowTickCounter = 0;
+        if (++slowTickCounter >= 10) {
+            slowTickCounter = 0;
+
+            Key_Tick();
+            Encoder_Tick();
+
+            if (isRunning) {
+                Tracking_Control(GetInfraredSenseFlag(), BaseSpeed); // 计算目标速度
+                Motor1_UpdateSpeed();                                // 执行速度闭环
+                Motor2_UpdateSpeed();
+            }
+            else {
+                Motor1_SetPWM(0);
+                Motor2_SetPWM(0);
+            }
+
+            SpeedReportFlag = 1;
         }
 
-        SpeedReportFlag = 1;
+        InfraredSensor_Tick();
     }
-
-    InfraredSensor_Tick();
 }
