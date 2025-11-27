@@ -58,7 +58,7 @@ void Encoder_Init(void)
 }
 
 // 获取编码器1计数值并清零
-// 在tim1中断中调用，10ms一次
+// 在tim1中断中调用，1ms一次
 int32_t Encoder1_Get(void)
 {
     int16_t Temp;
@@ -74,10 +74,38 @@ int32_t Encoder2_Get(void)
     return Temp;
 }
 
+#define SPEED_WINDOW_SIZE 10
+static int16_t SpeedBuffer1[SPEED_WINDOW_SIZE] = {0};
+static int16_t SpeedBuffer2[SPEED_WINDOW_SIZE] = {0};
+static uint8_t BufferIdx = 0;
+
 void Encoder_Tick(void)
 {
-    CurrentSpeed1 = Encoder1_Get();
-    CurrentSpeed2 = Encoder2_Get();
-    EncoderCount1 += Motor1_GetCurrentSpeed();
-    EncoderCount2 += Motor2_GetCurrentSpeed();
+    // 1. 读取 1ms 内的原始脉冲增量
+    int16_t delta1 = Encoder1_Get();
+    int16_t delta2 = Encoder2_Get();
+
+    // 2. 累计位置 (使用原始增量，避免积分误差)
+    EncoderCount1 += delta1;
+    EncoderCount2 += delta2;
+
+    // 3. 更新滑动窗口 (FIFO)
+    SpeedBuffer1[BufferIdx] = delta1;
+    SpeedBuffer2[BufferIdx] = delta2;
+    BufferIdx++;
+    if (BufferIdx >= SPEED_WINDOW_SIZE) {
+        BufferIdx = 0;
+    }
+
+    // 4. 计算窗口总和 (等效于最近 10ms 的脉冲数)
+    int32_t sum1 = 0;
+    int32_t sum2 = 0;
+    for (uint8_t i = 0; i < SPEED_WINDOW_SIZE; i++) {
+        sum1 += SpeedBuffer1[i];
+        sum2 += SpeedBuffer2[i];
+    }
+
+    // 5. 更新全局速度变量
+    CurrentSpeed1 = sum1;
+    CurrentSpeed2 = sum2;
 }

@@ -20,8 +20,8 @@ volatile int32_t CurrentSpeed1, CurrentSpeed2;
 volatile int64_t EncoderCount1 = 0;
 volatile int64_t EncoderCount2 = 0;
 volatile float kp = 3.5f;
-volatile float ki = 0.25f;
-volatile float kd = 0.69f;
+volatile float ki = 0.025f; // 频率提高10倍，积分系数除以10
+volatile float kd = 7.5f;   // 频率提高10倍，微分系数乘以10
 
 PID_TypeDef Motor1_PID;
 PID_TypeDef Motor2_PID;
@@ -85,26 +85,29 @@ void TIM1_UP_IRQHandler(void)
     if (TIM_GetITStatus(TIM1, TIM_IT_Update) == SET) {
         TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
 
+        // === 1kHz 高频任务 ===
+        Encoder_Tick(); // 1ms 读取一次，更新滑动平均速度
+
+        if (isRunning) {
+            Tracking_Control(GetInfraredSenseFlag(), BaseSpeed); // 1kHz 循迹计算
+            Motor1_UpdateSpeed();                                // 1kHz 速度闭环
+            Motor2_UpdateSpeed();
+        }
+        else {
+            Motor1_SetPWM(0);
+            Motor2_SetPWM(0);
+        }
+
+        InfraredSensor_Tick(); // 1kHz 红外检测
+
+        // === 100Hz 低频任务 (分频) ===
         static uint8_t slowTickCounter = 0;
         if (++slowTickCounter >= 10) {
             slowTickCounter = 0;
 
-            Key_Tick();
-            Encoder_Tick();
+            Key_Tick(); // 按键消抖保持低频
 
-            if (isRunning) {
-                Tracking_Control(GetInfraredSenseFlag(), BaseSpeed); // 计算目标速度
-                Motor1_UpdateSpeed();                                // 执行速度闭环
-                Motor2_UpdateSpeed();
-            }
-            else {
-                Motor1_SetPWM(0);
-                Motor2_SetPWM(0);
-            }
-
-            SpeedReportFlag = 1;
+            SpeedReportFlag = 1; // 串口上报保持 100Hz，避免刷屏
         }
-
-        InfraredSensor_Tick();
     }
 }

@@ -62,12 +62,12 @@ void Tracking_Control(uint8_t status, int32_t baseSpeed)
             coefficient2 = 1.8f;
         }
         else if (baseSpeed == 40) {
-            coefficient1 = 1.7f;
-            coefficient2 = 0.5f;
+            coefficient1 = 1.6f;
+            coefficient2 = 5.8f;
         }
         else if (baseSpeed == 60) {
-            coefficient1 = 1.8f;
-            coefficient2 = 1.1f;
+            coefficient1 = 2.0f; // 外侧轮加速空间有限，系数改小
+            coefficient2 = 6.0f; // 内侧轮必须大幅减速，甚至反转，才能产生足够力矩
         }
     }
     else if (error > 0) {
@@ -76,12 +76,12 @@ void Tracking_Control(uint8_t status, int32_t baseSpeed)
             coefficient2 = 1.8f;
         }
         else if (baseSpeed == 40) {
-            coefficient1 = 0.5f;
-            coefficient2 = 1.7f;
+            coefficient1 = 5.8f;
+            coefficient2 = 1.6f;
         }
         else if (baseSpeed == 60) {
-            coefficient1 = 1.1f;
-            coefficient2 = 1.8f;
+            coefficient1 = 6.0f; // 内侧轮大幅减速
+            coefficient2 = 2.0f; // 外侧轮加速空间有限
         }
     }
 
